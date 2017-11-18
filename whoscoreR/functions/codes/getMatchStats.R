@@ -34,7 +34,7 @@ getMatchStats <- function(URL, startDate) {
     for(i in seq_len(nrOfTablesToSkip))
     {
       changeMatchWeek()
-      Sys.sleep(1)
+      # Sys.sleep(1)
     }
     
     D_upperDate <- readDateButton()

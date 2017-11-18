@@ -1,28 +1,5 @@
 
-# library(RSelenium)
-# 
-# ## Tworzenie połączenia
-# remDr <- remoteDriver(port = 4445L)
-# ## Connect to server
-# remDr$open()
-# ## Sprawdzanie statusu połączenia
-# remDr$getStatus()
-# 
-# remDr$getCurrentUrl()
-# 
-# URL <- "https://www.whoscored.com/Matches/1190304/Live/England-Premier-League-2017-2018-Stoke-Leicester"
-# mId <- "a"
-# l <- "b"
-# s <- "1"
-# 
-# rm(matchDetailedStats, matchStats)
-# getOneMatchStats(matchURL = URL, matchId = mId,league =  l, season = s)
-
-
-# sapply(x, function(i) {return(unlist(i$getElementText()))})
-
 #  ------------------------------------------------------------------------
-
 
 
 getOneMatchStats <- function(matchURL, matchId, league, season) {
@@ -53,6 +30,8 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
     )
   }
   
+  matchesIdWithProblems <<- character()
+  
   matchMainStatsPanel <- remDr$findElement(using = "id", value = "match-centre-stats")
   matchMainStatsBoxes <- matchMainStatsPanel$findChildElements(using = "class", value = "match-centre-stat")
   
@@ -82,6 +61,7 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
       
       moreButton <- statBox$findChildElement(using = "class", value = "toggle-stat-details")
       moreButton$clickElement()
+      # Sys.sleep(0.5)
       
       details <- remDr$findElement(using = "xpath", value = "//li[@class='match-centre-stat-details visible']")
       detailBoxes <- details$findChildElements(using = "tag name", value = "li")
@@ -110,8 +90,6 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
         
         matchDetailedStats <<- rbind(matchDetailedStats, oneRow)
         
-        # moreButton$clickElement() ## close details
-        # Sys.sleep(1)
       })
       
     }
@@ -136,7 +114,7 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
     }
     
   })
-  
+  print("Read Match Centre Data.")
   ######################
   ## Statystyki dla rzutów rożnych (nie wczytywało gdy obliczało łącznie z pozostałymi)
   lapply(matchMainStatsBoxes[4], function(statBox) {
@@ -145,8 +123,9 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
     subcategory <- "Details"
     moreButton <- statBox$findChildElement(using = "class", value = "toggle-stat-details")
     moreButton$clickElement()
-    Sys.sleep(1)
+    Sys.sleep(0.5)
     moreButton$clickElement()
+    Sys.sleep(0.5)
     
     details <- remDr$findElement(using = "xpath", value = "//li[@class='match-centre-stat-details visible']")
     detailBoxes <- details$findChildElements(using = "tag name", value = "li")
@@ -174,6 +153,7 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
       
       matchDetailedStats <<- rbind(matchDetailedStats, oneRow)
       moreButton$clickElement() ## close details
+      # Sys.sleep(0.5)
     })
   })
   
@@ -187,7 +167,7 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
   
   statsPanel <- remDr$findElement(using = "id", value = "event-type-filters")
   statBoxes <-statsPanel$findChildElements(using = "class", value = "filterz-option")
-  
+  print("Read Chalkboard Data.")
   lapply(statBoxes, function(statBox) {
     statBoxNameElem <- statBox$findChildElement(using = "css", value = "h4")
     statBoxName <- statBoxNameElem$getElementText()
@@ -206,19 +186,34 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
     matchStats <<- rbind(matchStats, statBoxSummary)
     
     # detail stats ------------------------------------------------------------
-    statBox$clickElement()
+    
+    Sys.sleep(0.5)
+  
+    tryCatch({
+      statBox$findChildElements(using = "css", value = "span")[[1]]$clickElement()
+    }, 
+    error = function(e) {
+      matchesIdWithProblems <<- unique(c(matchesIdWithProblems, matchId))
+      print(paste("Nie udało się wczytać danych dla meczu", matchId, "z kategorii", unlist(statBoxName)))
+      },
+    message = function(m) {
+      cat("")
+    })
+    
+    Sys.sleep(0.5)
+  
     
     onePieceDetailedStats <- getOneMatchDetailedStats(matchId = matchId,
                                                       category = unlist(statBoxName),
                                                       league = league,
                                                       season = season)
     matchDetailedStats <<- rbind(matchDetailedStats, onePieceDetailedStats)
-    # Sys.sleep(1)
     # detail stats - end ------------------------------------------------------
     
   })
   matchStats <<- matchStats[which(!is.na(matchStats$Statystyka)) , ]
   matchDetailedStats <<- matchDetailedStats[which(!is.na(matchDetailedStats$Substatystyka)) , ]
+  matchesIdWithProblems <<- matchesIdWithProblems
 }
 
 

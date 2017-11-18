@@ -4,6 +4,7 @@ changeMatchWeek <- function() {
                                       value = "a.previous.button")
   
   previousButton$clickElement()
+  # Sys.sleep(0.5)
   
 }
 
