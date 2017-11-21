@@ -56,7 +56,9 @@ URL <- "https://www.whoscored.com/Regions/252/Tournaments/2/Seasons/6335/England
 getMatchStats(URL = URL, startDate = "2017-05-15")
 
 
-
+## skip last match table from previous season and download 4 rounds
+URL <- "https://www.whoscored.com/Regions/252/Tournaments/2/Seasons/6335/England-Premier-League"
+getMatchStats(URL = URL, startDate = "2017-04-25", skip = 1)
 
 
 # Get one match statistics ------------------------------------------------

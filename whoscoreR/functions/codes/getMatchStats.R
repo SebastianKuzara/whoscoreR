@@ -2,7 +2,7 @@
 
 
 
-getMatchStats <- function(URL, startDate) {
+getMatchStats <- function(URL, startDate, skip = 0) {
   
   require(lubridate)
   
@@ -26,7 +26,7 @@ getMatchStats <- function(URL, startDate) {
   
   D_upperDate <- readDateButton()
   
-  nrOfTablesToSkip <- 0
+  nrOfTablesToSkip <- skip
   
   while(D_upperDate >= startDate)
   {
@@ -47,8 +47,9 @@ getMatchStats <- function(URL, startDate) {
     {
       for(nrHref in 1:length(hrefs))
       {
-        print(paste(
-          "Id meczu:",
+        print(paste0(
+          as.character(format(Sys.time(), format = "%H:%M:%S")), 
+          ": Read match id ",
           unname(hrefs[[ nrHref ]]["matchId"])
         ))
         

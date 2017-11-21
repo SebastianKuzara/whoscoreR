@@ -114,7 +114,7 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
     }
     
   })
-  print("Read Match Centre Data.")
+  print("Read Match Centre data.")
   ######################
   ## Statystyki dla rzutów rożnych (nie wczytywało gdy obliczało łącznie z pozostałymi)
   lapply(matchMainStatsBoxes[4], function(statBox) {
@@ -123,9 +123,9 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
     subcategory <- "Details"
     moreButton <- statBox$findChildElement(using = "class", value = "toggle-stat-details")
     moreButton$clickElement()
-    Sys.sleep(0.5)
+    # Sys.sleep(0.5)
     moreButton$clickElement()
-    Sys.sleep(0.5)
+    # Sys.sleep(0.5)
     
     details <- remDr$findElement(using = "xpath", value = "//li[@class='match-centre-stat-details visible']")
     detailBoxes <- details$findChildElements(using = "tag name", value = "li")
@@ -167,7 +167,7 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
   
   statsPanel <- remDr$findElement(using = "id", value = "event-type-filters")
   statBoxes <-statsPanel$findChildElements(using = "class", value = "filterz-option")
-  print("Read Chalkboard Data.")
+  print("Read Chalkboard data.")
   lapply(statBoxes, function(statBox) {
     statBoxNameElem <- statBox$findChildElement(using = "css", value = "h4")
     statBoxName <- statBoxNameElem$getElementText()
@@ -187,7 +187,7 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
     
     # detail stats ------------------------------------------------------------
     
-    Sys.sleep(0.5)
+    # Sys.sleep(0.5)
   
     tryCatch({
       statBox$findChildElements(using = "css", value = "span")[[1]]$clickElement()
@@ -200,7 +200,7 @@ getOneMatchStats <- function(matchURL, matchId, league, season) {
       cat("")
     })
     
-    Sys.sleep(0.5)
+    # Sys.sleep(0.5)
   
     
     onePieceDetailedStats <- getOneMatchDetailedStats(matchId = matchId,
