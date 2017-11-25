@@ -83,7 +83,7 @@ getMatchStats <- function(URL, startDate, skip = 0) {
     {
       message(paste0("Some error occurred:\n",
                   e, ".\n",
-                  "Try again to run function from last available round."))
+                  "Try again to restart the function from last available round."))
       cat(paste0("Skipped round(s): ", nrOfTablesToSkip-skip, "\n"))
       
       # remDr$close()
